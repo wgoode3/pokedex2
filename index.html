@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pokedex</title>
+    <script type="text/javascript" src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        #pokedex {
+            width: 1000px;
+            margin: 50px auto;
+        }
+        .pokeEntry {
+            width: 100px;
+            cursor: pointer;
+        }
+        .pokeEntry:hover {
+            background-color: #eee;
+        }
+        #pokemodal {
+            width: 500px;
+            height: 500px;
+            box-sizing: border-box;
+            padding: 20px;
+            background-color: #eeee;
+            position: fixed;
+            top: calc(50% - 250px);
+            left: calc(50% - 250px);
+            display: none;
+        }
+        #pokemodal img {
+            width: 200px;
+        }
+        #close {
+            float: right;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gotta catch 'em all</h1>
+    <div id="pokedex"></div>
+    <div id="pokemodal">
+        <button id="close">&times;</button>
+        <div id="pokedetails"></div>
+    </div>
+    <script>
+        function capitalize(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        for(var i=1; i<151; i++) {
+            $('#pokedex').append(`<img class="pokeEntry" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png" alt="pokemon ${i}" id="${i}"/>`);
+        }
+        $(".pokeEntry").click(function() {
+            $.get(`https://pokeapi.co/api/v2/pokemon/${this.id}`, function(data) {
+                console.log(data);
+                $('#pokemodal').css('display', 'block');
+                var s = `<h1>Pokemon: ${capitalize(data.name)}</h1>`
+                s += `<img src="${data.sprites.front_default}" alt="${data.name}"/>`;
+                s += `<img src="${data.sprites.back_default}" alt="${data.name}"/>`;
+                s += `<ul>`;
+                for(var i=0; i<data.stats.length; i++){
+                    s += `<li>${data.stats[i].stat.name}: ${data.stats[i].base_stat}</li>`;
+                }
+                s += "</ul>";
+                $('#pokedetails').html(s);
+            }, 'json');
+        });
+        $('#close').click(function() {
+            $('#pokemodal').css('display', 'none');
+        });
+    </script>
+</body>
+</html>
